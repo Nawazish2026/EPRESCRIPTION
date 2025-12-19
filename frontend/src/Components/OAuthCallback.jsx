@@ -1,6 +1,6 @@
 
 // src/Components/OAuthCallback.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
@@ -12,14 +12,34 @@ const OAuthCallback = () => {
   const { login } = useAuth();
   const [status, setStatus] = useState('processing');
   const [error, setError] = useState('');
+  const runOnce = useRef(false);
 
   useEffect(() => {
+    if (runOnce.current) return;
+    runOnce.current = true;
+
     const token = searchParams.get('token');
 
     // If opened in a popup (via GoogleButton), send token to parent and close
-    if (window.opener && token) {
-      window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, window.location.origin);
-      window.close();
+    // Check window.opener OR window.name (set in GoogleButton) to detect popup mode
+    if (token && (window.opener || window.name === 'google-oauth')) {
+      // 1. Try standard postMessage
+      try {
+        if (window.opener) {
+          window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, '*');
+        }
+      } catch (e) {
+        // Ignore COOP/Cross-origin errors and proceed to BroadcastChannel
+      }
+      
+      // 2. Use BroadcastChannel (works even if opener is broken by COOP)
+      const authChannel = new BroadcastChannel('auth_channel');
+      authChannel.postMessage({ type: 'OAUTH_SUCCESS', token });
+
+      setTimeout(() => {
+        authChannel.close();
+        window.close();
+      }, 500);
       return;
     }
 

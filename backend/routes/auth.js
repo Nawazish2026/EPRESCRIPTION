@@ -18,35 +18,11 @@ router.get(
     // Successful authentication
     const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     
-    // Create HTML page that sends token back to opener via postMessage
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Authentication Success</title>
-          <style>
-            body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-            .success { color: #4CAF50; }
-          </style>
-        </head>
-        <body>
-          <h2 class="success">Authentication Successful!</h2>
-          <p>You will be redirected shortly...</p>
-          <script>
-            // Send token back to parent window
-            if (window.opener) {
-              window.opener.postMessage({
-                type: 'OAUTH_SUCCESS',
-                token: '${token}'
-              }, '*');
-            } else {
-              // Fallback: redirect if popup was closed
-              window.location.href = '/auth/callback?token=${token}';
-            }
-          </script>
-        </body>
-      </html>
-    `);
+    // Determine the Frontend URL based on the environment
+    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    // Redirect the user back to the Frontend with the token
+    res.redirect(`${frontendURL}/auth/callback?token=${token}`);
   }
 );
 
@@ -145,7 +121,7 @@ router.post('/login', async (req, res) => {
 // GET PROFILE (Protected Route)
 router.get('/profile', verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('-password');
+    const user = await User.findById(req.user.id).select('-password');
     res.status(200).json({ user });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

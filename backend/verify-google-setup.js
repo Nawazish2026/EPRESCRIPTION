@@ -8,7 +8,8 @@ console.log('='.repeat(50));
 
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-const frontendOrigin = process.env.FRONTEND_ORIGIN;
+const frontendOrigin = process.env.FRONTEND_ORIGIN || process.env.FRONTEND_URL;
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:5001';
 
 let errors = 0;
 let warnings = 0;
@@ -51,8 +52,8 @@ if (!clientSecret) {
   console.log('   Value:', clientSecret.substring(0, 15) + '...');
 }
 
-// Check Frontend Origin
-console.log('\n3. Checking FRONTEND_ORIGIN...');
+// Check Frontend URL
+console.log('\n3. Checking FRONTEND_URL / FRONTEND_ORIGIN...');
 if (!frontendOrigin) {
   console.log('   ⚠️  NOT SET (will default to http://localhost:5173)');
   warnings++;
@@ -62,8 +63,8 @@ if (!frontendOrigin) {
 
 // Check OAuth endpoints
 console.log('\n4. OAuth Flow Endpoints:');
-console.log('   📍 Login initiation: http://localhost:5001/api/auth/google');
-console.log('   📍 Callback URL: http://localhost:5001/api/auth/google/callback');
+console.log(`   📍 Login initiation: ${backendUrl}/api/auth/google`);
+console.log(`   📍 Callback URL: ${backendUrl}/api/auth/google/callback`);
 console.log('   📍 Redirect after auth:', frontendOrigin || 'http://localhost:5173');
 
 // Google Console checklist
@@ -71,9 +72,9 @@ console.log('\n5. Google Cloud Console Checklist:');
 console.log('   Make sure you have configured in Google Console:');
 console.log('   □ Authorized JavaScript origins:');
 console.log('     - http://localhost:5173');
-console.log('     - http://localhost:5001');
+console.log(`     - ${backendUrl}`);
 console.log('   □ Authorized redirect URIs:');
-console.log('     - http://localhost:5001/api/auth/google/callback');
+console.log(`     - ${backendUrl}/api/auth/google/callback`);
 console.log('   □ OAuth consent screen configured');
 console.log('   □ Added yourself as test user');
 

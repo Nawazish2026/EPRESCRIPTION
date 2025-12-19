@@ -19,6 +19,36 @@ export default function GoogleButton({ text = 'Continue with Google' }) {
       'width=500,height=600,scrollbars=yes,resizable=yes'
     );
 
+    // Use BroadcastChannel as a robust fallback if window.opener is broken by COOP
+    const authChannel = new BroadcastChannel('auth_channel');
+
+    const cleanup = () => {
+      window.removeEventListener('message', messageListener);
+      clearInterval(checkClosed);
+      authChannel.close();
+    };
+
+    const handleSuccess = (token) => {
+      cleanup();
+      try { if (popup) popup.close(); 
+      } catch (e) { /* ignore COOP errors */ }
+      
+      api.get('/auth/profile', {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(response => {
+        login(token, response.data.user);
+        navigate('/home');
+      }).catch(error => {
+        console.error('Failed to fetch user profile', error);
+      });
+    };
+
+    authChannel.onmessage = (event) => {
+      if (event.data?.type === 'OAUTH_SUCCESS') {
+        handleSuccess(event.data.token);
+      }
+    };
+
     // Listen for messages from the popup
     const messageListener = (event) => {
       // Verify origin for security
@@ -29,18 +59,10 @@ export default function GoogleButton({ text = 'Continue with Google' }) {
 
       // Handle the OAuth success/failure
       if (event.data.type === 'OAUTH_SUCCESS') {
-        popup.close();
-        // Fetch user profile and redirect to home
-        api.get('/auth/profile', {
-          headers: { Authorization: `Bearer ${event.data.token}` }
-        }).then(response => {
-          login(event.data.token, response.data.user);
-          navigate('/home');
-        }).catch(error => {
-          console.error('Failed to fetch user profile', error);
-        });
+        handleSuccess(event.data.token);
       } else if (event.data.type === 'OAUTH_ERROR') {
-        popup.close();
+        cleanup();
+        try { popup.close(); } catch (e) { /* ignore */ }
         console.error('OAuth error:', event.data.error);
         alert('Google authentication failed. Please try again.');
       }
@@ -50,9 +72,13 @@ export default function GoogleButton({ text = 'Continue with Google' }) {
 
     // Check if popup is closed manually
     const checkClosed = setInterval(() => {
-      if (popup && popup.closed) {
+      try {
+        if (!popup || popup.closed) {
+          cleanup();
+        }
+      } catch (error) {
+        // Ignore cross-origin errors (e.g. COOP blocking window.closed access)
         clearInterval(checkClosed);
-        window.removeEventListener('message', messageListener);
       }
     }, 1000);
   };

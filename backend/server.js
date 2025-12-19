@@ -24,6 +24,9 @@ if (!process.env.MONGO_URI) {
 if (!process.env.JWT_SECRET) {
   console.warn('Warning: JWT_SECRET is not set in .env (required for jwt.sign)');
 }
+if (!process.env.FRONTEND_URL) {
+  console.warn('Warning: FRONTEND_URL is not set in .env (defaults to http://localhost:5173)');
+}
 
 // --- middleware ---
 app.use(express.json()); // <--- important: parse JSON bodies
