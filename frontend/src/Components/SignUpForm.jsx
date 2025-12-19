@@ -6,6 +6,43 @@ import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import './forms.css';
 
+const InputField = ({ icon, type, value, onChange, placeholder, hasValidation, fieldKey }) => (
+  <div className="relative group">
+    <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+      value 
+        ? 'text-purple-500 scale-110' 
+        : 'text-gray-400 scale-100'
+    } w-5 h-5 z-10`}>
+      {icon}
+    </div>
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      className={`w-full pl-12 pr-12 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
+        value 
+          ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white' 
+          : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+      }`}
+      placeholder={placeholder}
+    />
+    {/* Animated underline */}
+    <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${
+      value ? 'w-full' : 'w-0'
+    }`}></div>
+    {/* Validation indicator */}
+    {hasValidation !== undefined && value && (
+      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+        {hasValidation ? (
+          <CheckCircle className="w-5 h-5 text-green-500 animate-bounce" />
+        ) : (
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+        )}
+      </div>
+    )}
+  </div>
+);
+
 export default function SignupForm({ onGotoLogin }) {
   const { login } = useAuth();
   const [name, setName] = useState('');
@@ -50,44 +87,6 @@ export default function SignupForm({ onGotoLogin }) {
       setLoading(false);
     }
   };
-
-
-  const InputField = ({ icon, type, value, onChange, placeholder, hasValidation, fieldKey }) => (
-    <div className="relative group">
-      <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-        value 
-          ? 'text-purple-500 scale-110' 
-          : 'text-gray-400 scale-100'
-      } w-5 h-5 z-10`}>
-        {icon}
-      </div>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className={`w-full pl-12 pr-12 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
-          value 
-            ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white' 
-            : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-        }`}
-        placeholder={placeholder}
-      />
-      {/* Animated underline */}
-      <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${
-        value ? 'w-full' : 'w-0'
-      }`}></div>
-      {/* Validation indicator */}
-      {hasValidation !== undefined && value && (
-        <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-          {hasValidation ? (
-            <CheckCircle className="w-5 h-5 text-green-500 animate-bounce" />
-          ) : (
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-          )}
-        </div>
-      )}
-    </div>
-  );
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

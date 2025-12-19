@@ -6,6 +6,32 @@ import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
 import './forms.css';
 
+const InputField = ({ icon, type, value, onChange, placeholder }) => (
+  <div className="relative">
+    <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+      value 
+        ? 'text-cyan-500 scale-110' 
+        : 'text-gray-400 scale-100'
+    } w-5 h-5 z-10`}>
+      {icon}
+    </div>
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      className={`w-full pl-12 pr-4 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
+        value 
+          ? 'border-cyan-400 shadow-lg shadow-cyan-100 bg-white' 
+          : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+      }`}
+      placeholder={placeholder}
+    />
+    <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500 ${
+      value ? 'w-full' : 'w-0'
+    }`}></div>
+  </div>
+);
+
 export default function LoginForm({ onGotoSignup }) {
   const { login } = useAuth();
   const [loginMethod, setLoginMethod] = useState('email');
@@ -39,35 +65,6 @@ export default function LoginForm({ onGotoSignup }) {
       setLoading(false);
     }
   };
-
-
-
-
-  const InputField = ({ icon, type, value, onChange, placeholder }) => (
-    <div className="relative">
-      <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-        value 
-          ? 'text-cyan-500 scale-110' 
-          : 'text-gray-400 scale-100'
-      } w-5 h-5 z-10`}>
-        {icon}
-      </div>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className={`w-full pl-12 pr-4 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
-          value 
-            ? 'border-cyan-400 shadow-lg shadow-cyan-100 bg-white' 
-            : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-        }`}
-        placeholder={placeholder}
-      />
-      <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500 ${
-        value ? 'w-full' : 'w-0'
-      }`}></div>
-    </div>
-  );
 
   if (!mounted) {
     return (
