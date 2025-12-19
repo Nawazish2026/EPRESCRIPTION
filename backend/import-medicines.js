@@ -1,14 +1,15 @@
 const fs = require('fs');
+const path = require('path');
 const mongoose = require('mongoose');
 const csv = require('csv-parser');
 const dotenv = require('dotenv');
 const Medicine = require('./models/Medicine');
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Configuration
 const BATCH_SIZE = 1000; // Insert 1000 records at a time
-const CSV_FILE_PATH = 'medicine_data.csv'; // Ensure this matches your actual filename
+const CSV_FILE_PATH = path.join(__dirname, 'medicine_data.csv'); // Ensure this matches your actual filename
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
