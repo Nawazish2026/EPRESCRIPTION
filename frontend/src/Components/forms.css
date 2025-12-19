@@ -1,0 +1,117 @@
+/* frontend/src/Components/forms.css */
+
+:root {
+  --primary-glow: 0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(6, 182, 212, 0.2);
+  --primary-glow-hover: 0 0 40px rgba(34, 197, 94, 0.5), 0 0 80px rgba(6, 182, 212, 0.4);
+}
+
+.aurora-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.aurora-background::before,
+.aurora-background::after {
+  content: '';
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  border-radius: 50%;
+  opacity: 0.3;
+  mix-blend-mode: screen;
+  animation: aurora 20s infinite linear;
+}
+
+.aurora-background::before {
+  background: radial-gradient(circle, rgba(6,182,212,1) 0%, rgba(6,182,212,0) 70%);
+  top: -200px;
+  left: -200px;
+}
+
+.aurora-background::after {
+  background: radial-gradient(circle, rgba(139,92,246,1) 0%, rgba(139,92,246,0) 70%);
+  bottom: -200px;
+  right: -200px;
+  animation-delay: -10s;
+}
+
+@keyframes aurora {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(100px) translateY(50px) rotate(90deg);
+  }
+  50% {
+    transform: translateX(0px) translateY(100px) rotate(180deg);
+  }
+  75% {
+    transform: translateX(-100px) translateY(50px) rotate(270deg);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(360deg);
+  }
+}
+
+
+.form-container {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.form-container:hover {
+  transform: scale(1.05) rotateY(10deg) rotateX(5deg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.logo-container {
+  perspective: 1000px;
+}
+
+.logo-3d {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.logo-container:hover .logo-3d {
+  transform: translateZ(50px) rotateY(20deg) rotateX(10deg);
+  box-shadow: var(--primary-glow-hover);
+}
+
+.input-field-group {
+  position: relative;
+}
+
+.input-field-group .icon {
+  transition: all 0.3s ease-in-out;
+}
+
+.input-field-group:focus-within .icon {
+  transform: scale(1.1) rotate(-5deg) translateY(-2px);
+  color: var(--primary-color);
+}
+
+.floating-label {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 10px 20px -10px rgba(0, 123, 255, 0.5);
+  transform: translateY(-3px);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 8px -4px rgba(0, 123, 255, 0.5);
+}
+
+.google-btn:hover {
+  border-color: #4285F4;
+  background-color: #F8F9FA;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
