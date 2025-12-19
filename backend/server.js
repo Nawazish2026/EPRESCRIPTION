@@ -31,7 +31,7 @@ app.use(cookieParser());
 
 // configure CORS - allow requests from your frontend origin and allow credentials (cookies)
 app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  origin: process.env.FRONTEND_ORIGIN || true, // 'true' allows the requesting origin (useful for same-domain Vercel deployments)
   credentials: true,
 }));
 
@@ -83,6 +83,8 @@ function printRoutes(app) {
 printRoutes(app);
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
 
 module.exports = app;
