@@ -9,6 +9,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Configuration
 const BATCH_SIZE = 1000; // Insert 1000 records at a time
+const MAX_RECORDS = 5000; // Only import first 5000 medicines
 const CSV_FILE_PATH = path.join(__dirname, 'medicine_data.csv');
 
 mongoose.connect(process.env.MONGO_URI)
@@ -58,6 +59,11 @@ async function importData() {
     // Only add if name exists and not discontinued
     if (medicine.name && !medicine.isDiscontinued) {
       results.push(medicine);
+    }
+
+    // Stop if we've reached the limit
+    if (totalInserted + results.length >= MAX_RECORDS) {
+      break;
     }
 
     // When batch is full, insert and clear memory
