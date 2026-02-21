@@ -9,7 +9,7 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Configuration
 const BATCH_SIZE = 1000; // Insert 1000 records at a time
-const CSV_FILE_PATH = path.join(__dirname, 'medicine_data.csv'); // Ensure this matches your actual filename
+const CSV_FILE_PATH = path.join(__dirname, 'medicine_data.csv');
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
@@ -28,40 +28,60 @@ async function importData() {
     .pipe(csv());
 
   for await (const row of stream) {
-    // Map CSV columns to Schema fields based on your screenshot
+    // Map CSV columns to Schema fields based on actual CSV headers:
+    // id,name,price(₹),Is_discontinued,manufacturer_name,type,pack_size_label,short_composition1,short_composition2
+
+    // Combine compositions
+    const composition = [row['short_composition1'], row['short_composition2']]
+      .filter(c => c && c.trim())
+      .join(' + ');
+
+    // Parse price (remove ₹ symbol if present)
+    const priceStr = row['price(₹)'] || row['price'] || '0';
+    const price = parseFloat(priceStr.replace(/[₹,]/g, '')) || 0;
+
     const medicine = {
-      name: row['product_name'], 
-      composition: row['salt_composition'],
-      price: parseFloat(row['product_price']) || 0,
-      manufacturer: row['product_manufacturer'],
-      description: row['medicine_desc'],
-      side_effects: row['side_effects'],
-      drug_interactions: row['drug_interactions'],
-      packaging: row['pack_size_label'] || '' // Optional, if exists
+      name: row['name'],
+      composition: composition,
+      price: price,
+      manufacturer: row['manufacturer_name'],
+      type: row['type'] || 'allopathy',
+      packaging: row['pack_size_label'] || '',
+      isDiscontinued: row['Is_discontinued'] === 'TRUE'
     };
 
-    // Only add if name exists
-    if (medicine.name) {
+    // Only add if name exists and not discontinued
+    if (medicine.name && !medicine.isDiscontinued) {
       results.push(medicine);
     }
 
     // When batch is full, insert and clear memory
     if (results.length >= BATCH_SIZE) {
       try {
-        await Medicine.insertMany(results);
+        await Medicine.insertMany(results, { ordered: false });
         totalInserted += results.length;
         process.stdout.write(`\r⏳ Inserted ${totalInserted} records...`);
         results.length = 0; // Clear array
       } catch (e) {
-        console.error('Error inserting batch:', e.message);
+        // Skip duplicates
+        if (e.code !== 11000) {
+          console.error('\nError inserting batch:', e.message);
+        }
+        results.length = 0;
       }
     }
   }
 
   // Insert remaining records
   if (results.length > 0) {
-    await Medicine.insertMany(results);
-    totalInserted += results.length;
+    try {
+      await Medicine.insertMany(results, { ordered: false });
+      totalInserted += results.length;
+    } catch (e) {
+      if (e.code !== 11000) {
+        console.error('\nError inserting final batch:', e.message);
+      }
+    }
   }
 
   console.log(`\n🎉 DONE! Successfully imported ${totalInserted} medicines.`);

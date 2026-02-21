@@ -7,24 +7,41 @@ const passport = require('passport');
 const User = require('../models/User');
 const verifyToken = require('../middleware/auth');
 
-// Google Auth
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Check if Google OAuth is configured
+const isGoogleOAuthConfigured = () => {
+  return process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    !process.env.GOOGLE_CLIENT_SECRET.includes('YOUR_') &&
+    !process.env.GOOGLE_CLIENT_SECRET.includes('_HERE');
+};
 
-
-router.get(
-  '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login', session: false }),
-  (req, res) => {
-    // Successful authentication
-    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    
-    // Determine the Frontend URL based on the environment
-    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
-
-    // Redirect the user back to the Frontend with the token
-    res.redirect(`${frontendURL}/auth/callback?token=${token}`);
+// Google Auth - with fallback if not configured
+router.get('/google', (req, res, next) => {
+  if (!isGoogleOAuthConfigured()) {
+    return res.status(503).json({
+      message: 'Google OAuth is not configured. Please use email/password login.',
+      error: 'GOOGLE_OAUTH_NOT_CONFIGURED'
+    });
   }
-);
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
+
+router.get('/google/callback', (req, res, next) => {
+  if (!isGoogleOAuthConfigured()) {
+    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
+    return res.redirect(`${frontendURL}/login?error=oauth_not_configured`);
+  }
+  passport.authenticate('google', { failureRedirect: '/login', session: false }, (err, user) => {
+    if (err || !user) {
+      const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
+      return res.redirect(`${frontendURL}/login?error=oauth_failed`);
+    }
+    // Successful authentication
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
+    res.redirect(`${frontendURL}/auth/callback?token=${token}`);
+  })(req, res, next);
+});
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';

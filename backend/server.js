@@ -7,7 +7,18 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
 
-require('./config/passport')(passport);
+// Only configure Google OAuth if REAL credentials are provided (not placeholders)
+const hasValidGoogleCreds = process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET &&
+  !process.env.GOOGLE_CLIENT_SECRET.includes('YOUR_') &&
+  !process.env.GOOGLE_CLIENT_SECRET.includes('_HERE');
+
+if (hasValidGoogleCreds) {
+  require('./config/passport')(passport);
+  console.log('Google OAuth configured');
+} else {
+  console.warn('Warning: Google OAuth disabled (missing or placeholder credentials)');
+}
 
 const authRoutes = require('./routes/auth');
 const medicineRoutes = require('./routes/medicines');
@@ -47,14 +58,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// --- database connection ---
+// --- database connection (non-blocking - server continues even if DB fails) ---
+let dbConnected = false;
 async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB connected');
+    dbConnected = true;
   } catch (err) {
     console.error('MongoDB connection error:', err.message || err);
-    process.exit(1); // fail fast in production/dev so you notice the problem
+    console.warn('Server will continue running - some features may not work');
+    // Don't exit - let server run for UI testing
   }
 }
 connectDB();

@@ -24,7 +24,13 @@ export const CartProvider = ({ children }) => {
           item._id === medicine._id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prevItems, { ...medicine, quantity: 1 }];
+      return [...prevItems, {
+        ...medicine,
+        quantity: 1,
+        dosage: '',
+        frequency: 'After meals',
+        duration: '',
+      }];
     });
   };
 
@@ -39,6 +45,14 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  const updateItemField = (medicineId, field, value) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item._id === medicineId ? { ...item, [field]: value } : item
+      )
+    );
+  };
+
   const removeFromCart = (medicineId) => {
     setCartItems((prevItems) => prevItems.filter((item) => item._id !== medicineId));
   };
@@ -51,7 +65,7 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, updateQuantity, removeFromCart, clearCart, cartCount }}
+      value={{ cartItems, addToCart, updateQuantity, updateItemField, removeFromCart, clearCart, cartCount }}
     >
       {children}
     </CartContext.Provider>

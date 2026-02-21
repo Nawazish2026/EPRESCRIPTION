@@ -1,205 +1,239 @@
 // src/Components/MedicineCard.jsx
-import React from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useCart } from '../context/CartContext';
-import { IndianRupee, FlaskConical, AlertTriangle, Plus, Minus, Sparkles, Star, Shield, Heart, Eye } from 'lucide-react';
+import { IndianRupee, FlaskConical, AlertTriangle, Plus, Minus, Sparkles, Star, Shield, Heart, Package, Building2, ShoppingCart, Check } from 'lucide-react';
 
 const MedicineCard = ({ medicine }) => {
   const { cartItems, addToCart, updateQuantity } = useCart();
   const itemInCart = cartItems.find(item => item._id === medicine._id);
+  const [isHovered, setIsHovered] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+  const cardRef = useRef(null);
 
   // Generate a consistent color scheme based on medicine name
   const getColorScheme = (name) => {
     const colors = [
-      { bg: 'from-emerald-400 to-teal-600', text: 'text-emerald-600', border: 'border-emerald-200' },
-      { bg: 'from-blue-400 to-indigo-600', text: 'text-blue-600', border: 'border-blue-200' },
-      { bg: 'from-purple-400 to-violet-600', text: 'text-purple-600', border: 'border-purple-200' },
-      { bg: 'from-pink-400 to-rose-600', text: 'text-pink-600', border: 'border-pink-200' },
-      { bg: 'from-amber-400 to-orange-600', text: 'text-amber-600', border: 'border-amber-200' },
-      { bg: 'from-cyan-400 to-blue-600', text: 'text-cyan-600', border: 'border-cyan-200' },
+      { bg: 'from-emerald-500 to-teal-600', light: 'from-emerald-50 to-teal-50', darkLight: 'from-emerald-900/40 to-teal-900/40', text: 'text-emerald-600', darkText: 'text-emerald-400', accent: 'emerald', glow: 'rgba(16, 185, 129, 0.2)' },
+      { bg: 'from-blue-500 to-indigo-600', light: 'from-blue-50 to-indigo-50', darkLight: 'from-blue-900/40 to-indigo-900/40', text: 'text-blue-600', darkText: 'text-blue-400', accent: 'blue', glow: 'rgba(59, 130, 246, 0.2)' },
+      { bg: 'from-violet-500 to-purple-600', light: 'from-violet-50 to-purple-50', darkLight: 'from-violet-900/40 to-purple-900/40', text: 'text-violet-600', darkText: 'text-violet-400', accent: 'violet', glow: 'rgba(139, 92, 246, 0.2)' },
+      { bg: 'from-rose-500 to-pink-600', light: 'from-rose-50 to-pink-50', darkLight: 'from-rose-900/40 to-pink-900/40', text: 'text-rose-600', darkText: 'text-rose-400', accent: 'rose', glow: 'rgba(244, 63, 94, 0.2)' },
+      { bg: 'from-amber-500 to-orange-600', light: 'from-amber-50 to-orange-50', darkLight: 'from-amber-900/40 to-orange-900/40', text: 'text-amber-600', darkText: 'text-amber-400', accent: 'amber', glow: 'rgba(245, 158, 11, 0.2)' },
+      { bg: 'from-cyan-500 to-blue-600', light: 'from-cyan-50 to-blue-50', darkLight: 'from-cyan-900/40 to-blue-900/40', text: 'text-cyan-600', darkText: 'text-cyan-400', accent: 'cyan', glow: 'rgba(6, 182, 212, 0.2)' },
     ];
-    const index = name.charCodeAt(0) % colors.length;
+    const index = name ? name.charCodeAt(0) % colors.length : 0;
     return colors[index];
   };
 
   const colorScheme = getColorScheme(medicine.name);
-  const isLowStock = Math.random() > 0.8; // Simulate low stock for some medicines
+
+  const handleAddToCart = (e) => {
+    // Ripple effect
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = `${size}px`;
+    ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+    ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+    ripple.className = 'ripple-effect';
+    button.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+
+    addToCart(medicine);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1500);
+  };
+
+  // 3D tilt on hover
+  const handleMouseMove = useCallback((e) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -4;
+    const rotateY = ((x - centerX) / centerX) * 4;
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+    setIsHovered(false);
+  }, []);
 
   return (
-    <div className="medicine-card group relative">
+    <div
+      ref={cardRef}
+      className="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl flex flex-col border border-gray-100 dark:border-gray-700 hover:border-transparent"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transition: 'transform 0.4s cubic-bezier(0.03, 0.98, 0.52, 0.99), box-shadow 0.4s ease, border-color 0.3s ease',
+      }}
+    >
+      {/* Hover Glow Effect */}
+      <div
+        className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-500 -z-10"
+        style={{
+          boxShadow: isHovered ? `0 25px 60px -15px ${colorScheme.glow}` : 'none',
+          opacity: isHovered ? 1 : 0
+        }}
+      ></div>
+
       {/* Premium Badge */}
-      <div className="absolute top-4 right-4 z-10 badge-premium animate-fadeInUp">
-        <Sparkles className="w-3 h-3 mr-1" />
-        Premium
+      <div className={`absolute top-4 right-4 z-20 transition-all duration-500 ${isHovered ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-80'}`}>
+        <div className="flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+          <Sparkles className="w-3 h-3" />
+          <span>Premium</span>
+        </div>
       </div>
 
-      {/* Low Stock Warning */}
-      {isLowStock && (
-        <div className="absolute top-4 left-4 z-10 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-          Limited Stock
-        </div>
-      )}
-
       {/* Header with Dynamic Gradient */}
-      <div className={`bg-gradient-to-br ${colorScheme.bg} text-white p-6 flex-shrink-0 group-hover:shadow-2xl transition-all relative overflow-hidden`}>
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -translate-y-16 translate-x-16 animate-pulse-slow"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/20 rounded-full translate-y-12 -translate-x-12 animate-pulse-slow" style={{animationDelay: '1s'}}></div>
+      <div className={`relative bg-gradient-to-br ${colorScheme.bg} text-white p-6 overflow-hidden`}>
+        {/* Decorative Circles */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full transition-transform duration-700 group-hover:scale-125"></div>
+        <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/10 rounded-full transition-transform duration-700 group-hover:scale-110"></div>
+        <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/5 rounded-full animate-pulse"></div>
+
+        {/* Shimmer overlay on hover */}
+        <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 ${isHovered ? 'translate-x-full' : '-translate-x-full'}`}></div>
+
+        {/* Medicine Type Badge */}
+        <div className="absolute top-4 left-4">
+          <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold capitalize">
+            {medicine.type || 'Allopathy'}
+          </span>
         </div>
-        
-        <div className="relative z-10">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex-1">
-              <h3 className="font-black text-xl text-white line-clamp-2 group-hover:text-cyan-100 transition-colors leading-tight" title={medicine.name}>
-                {medicine.name}
-              </h3>
-              <p className="text-white/80 text-sm mt-2 font-medium">{medicine.manufacturer}</p>
-            </div>
-            <button className="ml-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-300 group/btn">
-              <Eye className="w-4 h-4 text-white group-hover/btn:scale-110 transition-transform" />
-            </button>
+
+        <div className="relative z-10 pt-6">
+          {/* Medicine Name */}
+          <h3 className="font-black text-xl text-white leading-tight line-clamp-2 mb-2 group-hover:text-white/90 transition-colors">
+            {medicine.name}
+          </h3>
+
+          {/* Manufacturer */}
+          <div className="flex items-center gap-2 text-white/80">
+            <Building2 className="w-4 h-4" />
+            <p className="text-sm font-medium line-clamp-1">{medicine.manufacturer || 'Unknown Manufacturer'}</p>
           </div>
 
-          {/* Rating Stars */}
+          {/* Rating */}
           <div className="flex items-center gap-2 mt-3">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 text-yellow-300 fill-current" />
+                <Star key={i} className={`w-4 h-4 transition-all duration-300 ${i < 4 ? 'text-yellow-300 fill-yellow-300' : 'text-white/30'} ${isHovered && i < 4 ? 'scale-110' : 'scale-100'}`} style={{ transitionDelay: `${i * 50}ms` }} />
               ))}
             </div>
-            <span className="text-xs text-white/80 font-medium">(4.8)</span>
+            <span className="text-xs text-white/70 font-medium">(4.5)</span>
           </div>
         </div>
       </div>
 
-      {/* Enhanced Content */}
-      <div className="p-6 flex-1 flex flex-col">
-        <div className="space-y-4 mb-6 flex-1">
-          {/* Composition Card */}
-          <div className={`bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-2xl border-2 ${colorScheme.border} hover:shadow-lg transition-all transform hover:scale-105 duration-300`}>
+      {/* Content Section */}
+      <div className="p-5 flex-1 flex flex-col gap-4 dark:bg-gray-800">
+        {/* Composition */}
+        {medicine.composition && (
+          <div className={`bg-gradient-to-br ${colorScheme.light} dark:${colorScheme.darkLight} p-4 rounded-2xl border border-${colorScheme.accent}-100 dark:border-${colorScheme.accent}-900/30 transition-all duration-300 group-hover:shadow-md`}>
             <div className="flex items-start gap-3">
-              <div className={`p-2 bg-gradient-to-br ${colorScheme.bg} rounded-xl shadow-md`}>
-                <FlaskConical className="w-5 h-5 text-white" />
+              <div className={`p-2.5 bg-gradient-to-br ${colorScheme.bg} rounded-xl shadow-md flex-shrink-0 transition-transform duration-300 group-hover:scale-105`}>
+                <FlaskConical className="w-4 h-4 text-white" />
               </div>
-              <div className="flex-1">
-                <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-1">Active Ingredient</p>
-                <p className="text-sm text-gray-900 line-clamp-2 font-semibold leading-relaxed">{medicine.composition}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Composition</p>
+                <p className={`text-sm ${colorScheme.text} dark:${colorScheme.darkText} font-semibold line-clamp-2`}>{medicine.composition}</p>
               </div>
             </div>
           </div>
+        )}
 
-          {/* Side Effects Card */}
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-2xl border-2 border-amber-200 hover:border-amber-300 hover:shadow-lg transition-all transform hover:scale-105 duration-300">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-md">
-                <AlertTriangle className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-1">Precautions</p>
-                <p className="text-sm text-gray-900 line-clamp-2 font-semibold leading-relaxed">
-                  {medicine.side_effects || 'Consult your doctor before use'}
-                </p>
-              </div>
-            </div>
+        {/* Packaging Info */}
+        {medicine.packaging && (
+          <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 px-4 py-3 rounded-xl border border-transparent dark:border-gray-700 transition-colors duration-300 group-hover:bg-gray-100 dark:group-hover:bg-gray-700/70">
+            <Package className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">{medicine.packaging}</span>
           </div>
+        )}
 
-          {/* Additional Info */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-xl border border-green-200">
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-green-600" />
-                <span className="text-xs font-bold text-green-800">Verified</span>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-red-50 to-pink-50 p-3 rounded-xl border border-red-200">
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-red-600" />
-                <span className="text-xs font-bold text-red-800">Safe</span>
-              </div>
-            </div>
+        {/* Trust Badges */}
+        <div className="flex gap-2">
+          <div className="flex items-center gap-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-3 py-1.5 rounded-lg text-xs font-semibold transition-transform duration-300 group-hover:scale-105">
+            <Shield className="w-3.5 h-3.5" />
+            Verified
+          </div>
+          <div className="flex items-center gap-1.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-lg text-xs font-semibold transition-transform duration-300 group-hover:scale-105">
+            <Heart className="w-3.5 h-3.5" />
+            Safe
           </div>
         </div>
 
-        {/* Enhanced Footer */}
-        <div className="bg-gradient-to-br from-gray-50 to-slate-100 p-5 rounded-2xl border-2 border-gray-200 group-hover:border-cyan-300 transition-all mt-auto">
-          <div className="flex justify-between items-center mb-4">
+        {/* Spacer */}
+        <div className="flex-1"></div>
+
+        {/* Price & Actions */}
+        <div className="bg-gradient-to-br from-gray-50 to-slate-100 dark:from-gray-700/50 dark:to-gray-800/50 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-gray-600">
+          {/* Price Display */}
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Price</p>
-              <div className="flex items-center gap-2">
-                <IndianRupee className={`w-6 h-6 ${colorScheme.text}`} />
-                <span className={`font-black text-3xl ${colorScheme.text}`}>
-                  {medicine.price ? medicine.price.toFixed(2) : '0.00'}
-                </span>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider mb-1">Price</p>
+              <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-black text-gray-900 dark:text-white">₹{medicine.price ? medicine.price.toFixed(0) : '0'}</span>
+                {medicine.price && <span className="text-sm text-gray-400 dark:text-gray-500 line-through">₹{(medicine.price * 1.2).toFixed(0)}</span>}
               </div>
             </div>
             <div className="text-right">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Rating</p>
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                <span className="font-bold text-gray-700">4.8</span>
-              </div>
+              <span className="inline-block bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded-lg text-xs font-bold">20% OFF</span>
             </div>
           </div>
 
-          {/* Quantity Controls or Add to Cart */}
-          <div className="w-full">
-            {itemInCart ? (
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-600 border-2 border-cyan-400 rounded-2xl p-2 shadow-lg">
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => updateQuantity(medicine._id, itemInCart.quantity - 1)}
-                    className="p-2 text-white hover:bg-white/20 rounded-lg transition-all transform hover:scale-125 active:scale-95"
-                    disabled={itemInCart.quantity <= 1}
-                  >
-                    <Minus className="w-5 h-5" />
-                  </button>
-                  <div className="flex-1 text-center">
-                    <span className="px-4 py-2 font-black text-white text-lg bg-white/20 rounded-lg inline-block min-w-[3rem]">
-                      {itemInCart.quantity}
-                    </span>
-                    <p className="text-xs text-white/80 mt-1">
-                      ₹{(itemInCart.price * itemInCart.quantity).toFixed(2)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => updateQuantity(medicine._id, itemInCart.quantity + 1)}
-                    className="p-2 text-white hover:bg-white/20 rounded-lg transition-all transform hover:scale-125 active:scale-95"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
+          {/* Add to Cart / Quantity Controls */}
+          {itemInCart ? (
+            <div className={`bg-gradient-to-r ${colorScheme.bg} rounded-2xl p-1 shadow-lg`}>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => updateQuantity(medicine._id, itemInCart.quantity - 1)}
+                  className="p-3 text-white hover:bg-white/20 rounded-xl transition-all active:scale-90"
+                >
+                  <Minus className="w-5 h-5" />
+                </button>
+                <div className="flex-1 text-center">
+                  <span className="font-black text-xl text-white">{itemInCart.quantity}</span>
+                  <p className="text-xs text-white/70 mt-0.5">in cart</p>
                 </div>
+                <button
+                  onClick={() => updateQuantity(medicine._id, itemInCart.quantity + 1)}
+                  className="p-3 text-white hover:bg-white/20 rounded-xl transition-all active:scale-90"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
               </div>
-            ) : (
-              <button
-                onClick={() => addToCart(medicine)}
-                disabled={isLowStock}
-                className={`w-full bg-gradient-to-r ${colorScheme.bg} text-white font-black px-6 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 text-lg ${
-                  isLowStock ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
-                {isLowStock ? 'Out of Stock' : 'Add to Cart'}
-              </button>
-            )}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="flex gap-2 mt-3">
-            <button className="flex-1 bg-white/80 hover:bg-white text-gray-700 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-300 border border-gray-200">
-              Details
+            </div>
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              className={`ripple-container w-full bg-gradient-to-r ${colorScheme.bg} text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn active:scale-95 ${justAdded ? 'animate-pulse' : ''}`}
+            >
+              {justAdded ? (
+                <>
+                  <Check className="w-5 h-5" />
+                  <span>Added!</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                  <span>Add to Cart</span>
+                </>
+              )}
             </button>
-            <button className="flex-1 bg-white/80 hover:bg-white text-gray-700 py-2 px-3 rounded-lg text-xs font-semibold transition-all duration-300 border border-gray-200">
-              Reviews
-            </button>
-          </div>
+          )}
         </div>
       </div>
-
-      {/* Hover Effect Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl pointer-events-none"></div>
     </div>
   );
 };
 
 export default MedicineCard;
-

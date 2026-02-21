@@ -6,7 +6,9 @@ import SignupForm from './Components/SignUpForm';
 import Home from './Components/Home';
 import CartPage from './Components/CartPage';
 import OAuthCallback from './Components/OAuthCallback';
-import { useAuth } from './context/AuthContext';
+import { useAuth, AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import { ThemeProvider } from './context/ThemeContext';
 import api from './api/axiosConfig';
 
 function AppContent() {
@@ -62,7 +64,7 @@ function AppContent() {
       <Route path="/login" element={!user ? <LoginForm onGotoSignup={() => navigate('/signup')} /> : <Navigate to="/home" replace />} />
       <Route path="/signup" element={!user ? <SignupForm onGotoLogin={() => navigate('/login')} /> : <Navigate to="/home" replace />} />
       <Route path="/auth/callback" element={<OAuthCallback />} />
-      
+
       {/* Protected Routes */}
       <Route
         path="/home"
@@ -70,12 +72,12 @@ function AppContent() {
           user ? (
             <>
               <Header onLogout={handleLogout} />
-              <Home 
-                searchQuery={searchQuery} 
-                onSearch={handleSearch} 
-                medicines={medicines} 
-                isSearching={isSearching} 
-                searchError={searchError} 
+              <Home
+                searchQuery={searchQuery}
+                onSearch={handleSearch}
+                medicines={medicines}
+                isSearching={isSearching}
+                searchError={searchError}
               />
             </>
           ) : (
@@ -83,7 +85,7 @@ function AppContent() {
           )
         }
       />
-      
+
       <Route
         path="/cart"
         element={
@@ -103,9 +105,15 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <AuthProvider>
+          <CartProvider>
+            <AppContent />
+          </CartProvider>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 
