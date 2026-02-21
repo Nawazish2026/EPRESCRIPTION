@@ -1,11 +1,11 @@
 // routes/auth.js
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const User = require('../models/User');
 const verifyToken = require('../middleware/auth');
+const { logAudit } = require('../middleware/auditLogger');
 
 // Check if Google OAuth is configured
 const isGoogleOAuthConfigured = () => {
@@ -15,7 +15,28 @@ const isGoogleOAuthConfigured = () => {
     !process.env.GOOGLE_CLIENT_SECRET.includes('_HERE');
 };
 
-// Google Auth - with fallback if not configured
+// Helper: generate JWT with role
+function generateToken(user) {
+  return jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+  );
+}
+
+// Helper: safe user object for responses
+function safeUser(user) {
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    profilePicture: user.profilePicture,
+  };
+}
+
+// ---- Google OAuth ----
 router.get('/google', (req, res, next) => {
   if (!isGoogleOAuthConfigured()) {
     return res.status(503).json({
@@ -36,73 +57,57 @@ router.get('/google/callback', (req, res, next) => {
       const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
       return res.redirect(`${frontendURL}/login?error=oauth_failed`);
     }
-    // Successful authentication
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = generateToken(user);
     const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
     res.redirect(`${frontendURL}/auth/callback?token=${token}`);
   })(req, res, next);
 });
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
-const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
-
-// helper to create token and set cookie
-function setAuthCookie(res, payload) {
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: COOKIE_SECURE,
-    sameSite: 'lax',
-    maxAge: 1000 * 60 * 60, // 1h
-  });
-  return token;
-}
-
-// SIGNUP
+// ---- SIGNUP ----
 router.post('/signup', async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, role } = req.body;
 
-    // Validate input
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Name, email and password are required' });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: 'Email already registered' });
     }
 
-    // Create new user
-    const user = new User({ name, email, phone, password });
+    // Allow role selection (default: doctor)
+    const allowedRoles = ['doctor', 'pharmacist'];
+    const userRole = allowedRoles.includes(role) ? role : 'doctor';
+
+    const user = new User({ name, email, phone, password, role: userRole });
     await user.save();
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = generateToken(user);
+
+    // Audit log
+    logAudit('USER_SIGNUP', user._id, 'User', user._id, { role: userRole }, req);
 
     res.status(201).json({
       message: 'User registered successfully',
       token,
-      user: { id: user._id, name: user.name, email: user.email }
+      user: safeUser(user),
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
-// LOGIN
+// ---- LOGIN ----
 router.post('/login', async (req, res) => {
   try {
     const { email, phone, password } = req.body;
 
-    // Validate input
     if ((!email && !phone) || !password) {
       return res.status(400).json({ message: 'Email or phone, and password required' });
     }
 
-    // Find user by email or phone
     let user;
     if (email) {
       user = await User.findOne({ email });
@@ -110,44 +115,63 @@ router.post('/login', async (req, res) => {
       user = await User.findOne({ phone });
     }
 
-    console.log('User found:', user ? user.email || user.phone : 'No user found');
     if (!user) {
+      logAudit('USER_LOGIN_FAILED', null, 'User', null, { email, phone, reason: 'not_found' }, req);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Check password
     const isPasswordValid = await user.matchPassword(password);
-    console.log('Password valid:', isPasswordValid);
     if (!isPasswordValid) {
+      logAudit('USER_LOGIN_FAILED', user._id, 'User', user._id, { reason: 'wrong_password' }, req);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = generateToken(user);
+
+    // Audit log
+    logAudit('USER_LOGIN', user._id, 'User', user._id, { role: user.role }, req);
 
     res.status(200).json({
       message: 'Login successful',
       token,
-      user: { id: user._id, name: user.name, email: user.email, phone: user.phone }
+      user: safeUser(user),
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
-// GET PROFILE (Protected Route)
+// ---- PROFILE ----
 router.get('/profile', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
-    res.status(200).json({ user });
+    res.status(200).json({ user: safeUser(user) });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
-// Logout (clear cookie)
+// ---- UPDATE PROFILE ----
+router.put('/profile', verifyToken, async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    await user.save();
+
+    logAudit('PROFILE_UPDATED', user._id, 'User', user._id, { name, phone }, req);
+
+    res.status(200).json({ message: 'Profile updated', user: safeUser(user) });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// ---- LOGOUT ----
 router.post('/logout', (req, res) => {
-  res.clearCookie('token', { httpOnly: true, secure: COOKIE_SECURE, sameSite: 'lax' });
+  res.clearCookie('token');
   res.json({ message: 'Logged out' });
 });
 

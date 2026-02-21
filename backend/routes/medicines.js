@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Medicine = require('../models/Medicine');
+const { getCache, setCache } = require('../config/redis');
 
 /**
  * @route   GET /api/medicines
@@ -50,6 +51,17 @@ router.get('/search', async (req, res) => {
       });
     }
 
+    // Check Cache first
+    const cacheKey = `search:${query.toLowerCase()}`;
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) {
+      return res.status(200).json({
+        success: true,
+        data: cachedData,
+        cached: true
+      });
+    }
+
     let medicines = [];
 
     // Try MongoDB text search first (requires text index)
@@ -81,6 +93,11 @@ router.get('/search', async (req, res) => {
       })
         .limit(20)
         .lean();
+    }
+
+    // Save to Cache for 5 minutes (300 seconds)
+    if (medicines.length > 0) {
+      await setCache(cacheKey, medicines, 300);
     }
 
     res.status(200).json({

@@ -6,6 +6,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const passport = require('passport');
+const http = require('http');
+const { initSocket } = require('./config/socket');
+const rateLimit = require('express-rate-limit');
 
 // Only configure Google OAuth if REAL credentials are provided (not placeholders)
 const hasValidGoogleCreds = process.env.GOOGLE_CLIENT_ID &&
@@ -25,8 +28,24 @@ const medicineRoutes = require('./routes/medicines');
 const prescriptionRoutes = require('./routes/prescription');
 const prescriptionsRoutes = require('./routes/prescriptions');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const adminRoutes = require('./routes/admin');
+const uploadsRoutes = require('./routes/uploads');
+const notificationRoutes = require('./routes/notifications');
+const auditRoutes = require('./routes/auditRoutes');
 
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.io
+initSocket(server);
+
+// --- Rate Limiting ---
+const globalLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200, message: 'Too many requests from this IP, please try again after 15 minutes' });
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30, message: 'Too many auth attempts from this IP, please try again after 15 minutes' });
+const searchLimiter = rateLimit({ windowMs: 60 * 1000, max: 60, message: 'Too many search requests, please slow down' });
+
+// Apply global rate limiter
+app.use(globalLimiter);
 
 // --- sanity checks for critical env vars (optional but helpful in dev) ---
 if (!process.env.MONGO_URI) {
@@ -75,12 +94,16 @@ connectDB();
 
 
 // --- mount routes ---
-// NOTE: frontend expects /api/auth/... so mounting at /api/auth avoids 404
-app.use('/api/auth', authRoutes);
-app.use('/api/medicines', medicineRoutes);
+// Apply strict limiters to specific paths
+app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/medicines', searchLimiter, medicineRoutes);
 app.use('/api/prescription', prescriptionRoutes);
 app.use('/api/prescriptions', prescriptionsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/admin/audit-logs', auditRoutes);
+app.use('/api/uploads', uploadsRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // optional root health-check
 app.get('/', (req, res) => res.send('Backend running'));
@@ -101,7 +124,7 @@ printRoutes(app);
 
 const PORT = process.env.PORT || 5001;
 if (require.main === module) {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-module.exports = app;
+module.exports = { app, server };

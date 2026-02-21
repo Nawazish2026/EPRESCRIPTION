@@ -8,18 +8,24 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   phone: { type: String },
   password: { type: String },
+  role: {
+    type: String,
+    enum: ['doctor', 'admin', 'pharmacist'],
+    default: 'doctor'
+  },
+  profilePicture: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now }
 });
 
 // Hash password before saving
-UserSchema.pre('save', async function() {
+UserSchema.pre('save', async function () {
   if (!this.isModified('password') || !this.password) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Method to compare passwords
-UserSchema.methods.matchPassword = async function(enteredPassword) {
+UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
