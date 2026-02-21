@@ -22,6 +22,11 @@ async function importData() {
   const results = [];
   let totalInserted = 0;
 
+  // --- Step 1: Clear existing data ---
+  console.log('🗑️  Clearing old medicine data...');
+  await Medicine.deleteMany({});
+  console.log('✅ Old data cleared.');
+
   console.log('🚀 Starting import... This may take a few minutes.');
 
   const stream = fs.createReadStream(CSV_FILE_PATH)
