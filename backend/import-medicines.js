@@ -8,8 +8,8 @@ const Medicine = require('./models/Medicine');
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Configuration
-const BATCH_SIZE = 1000; // Insert 1000 records at a time
-const MAX_RECORDS = 5000; // Only import first 5000 medicines
+const BATCH_SIZE = 1000;
+const MAX_RECORDS = 70000; // Cap at 70K medicines
 const CSV_FILE_PATH = path.join(__dirname, 'medicine_data.csv');
 
 mongoose.connect(process.env.MONGO_URI)
@@ -61,7 +61,7 @@ async function importData() {
       results.push(medicine);
     }
 
-    // Stop if we've reached the limit
+    // Stop at 70K cap
     if (totalInserted + results.length >= MAX_RECORDS) {
       break;
     }
