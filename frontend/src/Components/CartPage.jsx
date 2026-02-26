@@ -7,6 +7,28 @@ import { useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, FileText, Mail, ShoppingBag, User, Calendar, Stethoscope, ClipboardList, Sparkles, ArrowLeft, Pill, Clock, Timer, AlarmClock } from 'lucide-react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
+const DOSAGE_OPTIONS = [
+  '1/2 tablet',
+  '1 tablet',
+  '2 tablets',
+  '1 capsule',
+  '2 capsules',
+  '5 ml',
+  '10 ml',
+  '15 ml',
+  '250 mg',
+  '500 mg',
+  '650 mg',
+  '1 g',
+  '1 sachet',
+  '1 puff',
+  '2 puffs',
+  '1 drop',
+  '2 drops',
+  '1 application',
+  'As directed',
+];
+
 const FREQUENCY_OPTIONS = [
   'Once daily (OD)',
   'Twice daily (BD)',
@@ -260,13 +282,16 @@ const CartPage = () => {
                           <Pill className="w-3 h-3 text-cyan-500" />
                           Dosage
                         </label>
-                        <input
-                          type="text"
+                        <select
                           value={item.dosage || ''}
                           onChange={(e) => updateItemField(item._id, 'dosage', e.target.value)}
-                          placeholder="e.g., 500mg, 1 tab"
-                          className="w-full px-3 py-2.5 text-sm bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-cyan-400 dark:focus:border-cyan-500 focus:shadow-sm transition-all"
-                        />
+                          className="w-full px-3 py-2.5 text-sm bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-800 dark:text-white outline-none focus:border-cyan-400 dark:focus:border-cyan-500 focus:shadow-sm transition-all appearance-none cursor-pointer"
+                        >
+                          <option value="">Select dosage</option>
+                          {DOSAGE_OPTIONS.map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
                       </div>
 
                       {/* Frequency */}

@@ -8,27 +8,24 @@ import './forms.css';
 
 const InputField = ({ icon, type, value, onChange, placeholder }) => (
   <div className="relative">
-    <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-      value 
-        ? 'text-cyan-500 scale-110' 
+    <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${value
+        ? 'text-cyan-500 scale-110'
         : 'text-gray-400 scale-100'
-    } w-5 h-5 z-10`}>
+      } w-5 h-5 z-10`}>
       {icon}
     </div>
     <input
       type={type}
       value={value}
       onChange={onChange}
-      className={`w-full pl-12 pr-4 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
-        value 
-          ? 'border-cyan-400 shadow-lg shadow-cyan-100 bg-white' 
+      className={`w-full pl-12 pr-4 py-3 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${value
+          ? 'border-cyan-400 shadow-lg shadow-cyan-100 bg-white'
           : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-      }`}
+        }`}
       placeholder={placeholder}
     />
-    <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500 ${
-      value ? 'w-full' : 'w-0'
-    }`}></div>
+    <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500 ${value ? 'w-full' : 'w-0'
+      }`}></div>
   </div>
 );
 
@@ -92,13 +89,13 @@ export default function LoginForm({ onGotoSignup }) {
 
       {/* Floating Elements */}
       <div className="absolute top-20 right-20 w-40 h-40 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full opacity-20 blur-2xl animate-float"></div>
-      <div className="absolute bottom-32 left-16 w-64 h-64 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-15 blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
-      <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full opacity-25 blur-xl animate-float" style={{animationDelay: '4s'}}></div>
-      
+      <div className="absolute bottom-32 left-16 w-64 h-64 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-15 blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full opacity-25 blur-xl animate-float" style={{ animationDelay: '4s' }}></div>
+
       {/* Geometric Shapes */}
-      <div className="absolute top-40 left-40 w-24 h-24 border-2 border-cyan-300 rounded-full opacity-30 animate-spin" style={{animationDuration: '20s'}}></div>
+      <div className="absolute top-40 left-40 w-24 h-24 border-2 border-cyan-300 rounded-full opacity-30 animate-spin" style={{ animationDuration: '20s' }}></div>
       <div className="absolute bottom-40 right-40 w-16 h-16 border-2 border-purple-300 transform rotate-45 opacity-40 animate-pulse"></div>
-      <div className="absolute top-2/3 right-1/4 w-20 h-20 bg-gradient-to-br from-pink-300 to-cyan-300 rounded-lg opacity-20 blur-lg animate-bounce" style={{animationDelay: '3s'}}></div>
+      <div className="absolute top-2/3 right-1/4 w-20 h-20 bg-gradient-to-br from-pink-300 to-cyan-300 rounded-lg opacity-20 blur-lg animate-bounce" style={{ animationDelay: '3s' }}></div>
 
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md">
@@ -106,43 +103,41 @@ export default function LoginForm({ onGotoSignup }) {
 
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-3xl blur opacity-25 hover:opacity-40 transition duration-1000"></div>
-            <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 transform hover:scale-105 transition-all duration-500">
-              
-              {/* Logo with Enhanced Animation */}
-              <div className="text-center mb-10">
+            <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 transform hover:scale-[1.02] transition-all duration-500">
 
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-600 rounded-2xl mb-6 shadow-2xl transform hover:rotate-12 hover:scale-110 transition-all duration-500">
+              {/* Logo with Enhanced Animation */}
+              <div className="text-center mb-6">
+
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-600 rounded-2xl mb-4 shadow-2xl transform hover:rotate-12 hover:scale-110 transition-all duration-500">
                   <div className="relative">
-                    <Pill className="w-10 h-10 text-white" />
+                    <Pill className="w-8 h-8 text-white" />
                     <Sparkles className="w-4 h-4 text-yellow-300 absolute -top-1 -right-1 animate-pulse" />
                   </div>
                 </div>
-                <h1 className="text-4xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                <h1 className="text-3xl font-black bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
                   Welcome Back
                 </h1>
-                <p className="text-gray-600 text-lg font-medium">Sign in to your healthcare account</p>
+                <p className="text-gray-600 text-base font-medium">Sign in to your healthcare account</p>
               </div>
 
               {/* Enhanced Tab Toggle */}
-              <div className="flex bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl p-1.5 mb-8 shadow-inner">
+              <div className="flex bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl p-1.5 mb-5 shadow-inner">
                 <button
                   onClick={() => setLoginMethod('email')}
-                  className={`flex-1 py-3.5 text-sm font-bold rounded-xl transition-all duration-500 ${
-                    loginMethod === 'email'
+                  className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all duration-500 ${loginMethod === 'email'
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg transform scale-105'
                       : 'text-gray-600 hover:text-gray-800 hover:bg-white/70'
-                  }`}
+                    }`}
                 >
                   <Mail className="w-4 h-4 inline mr-2" />
                   Email
                 </button>
                 <button
                   onClick={() => setLoginMethod('phone')}
-                  className={`flex-1 py-3.5 text-sm font-bold rounded-xl transition-all duration-500 ${
-                    loginMethod === 'phone'
+                  className={`flex-1 py-3.5 text-sm font-bold rounded-xl transition-all duration-500 ${loginMethod === 'phone'
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg transform scale-105'
                       : 'text-gray-600 hover:text-gray-800 hover:bg-white/70'
-                  }`}
+                    }`}
                 >
                   <Phone className="w-4 h-4 inline mr-2" />
                   Phone
@@ -150,7 +145,7 @@ export default function LoginForm({ onGotoSignup }) {
               </div>
 
               {/* Enhanced Form Fields */}
-              <div className="space-y-6 mb-8">
+              <div className="space-y-4 mb-5">
                 {loginMethod === 'email' ? (
 
                   <InputField
@@ -173,22 +168,20 @@ export default function LoginForm({ onGotoSignup }) {
 
 
                 <div className="relative">
-                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-                    password 
-                      ? 'text-cyan-500 scale-110' 
+                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${password
+                      ? 'text-cyan-500 scale-110'
                       : 'text-gray-400 scale-100'
-                  } w-5 h-5 z-10`}>
+                    } w-5 h-5 z-10`}>
                     <Lock />
                   </div>
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`w-full pl-12 pr-16 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
-                      password 
-                        ? 'border-cyan-400 shadow-lg shadow-cyan-100 bg-white' 
+                    className={`w-full pl-12 pr-16 py-3 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${password
+                        ? 'border-cyan-400 shadow-lg shadow-cyan-100 bg-white'
                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                    }`}
+                      }`}
                     placeholder="Enter your password"
                   />
                   <button
@@ -197,9 +190,8 @@ export default function LoginForm({ onGotoSignup }) {
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
-                  <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500 ${
-                    password ? 'w-full' : 'w-0'
-                  }`}></div>
+                  <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500 ${password ? 'w-full' : 'w-0'
+                    }`}></div>
                 </div>
               </div>
 
@@ -215,7 +207,7 @@ export default function LoginForm({ onGotoSignup }) {
               <button
                 onClick={handleLogin}
                 disabled={loading}
-                className="w-full mb-6 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white py-5 rounded-2xl font-bold text-lg hover:from-cyan-600 hover:via-blue-700 hover:to-purple-700 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-2xl hover:shadow-3xl transform hover:scale-105 active:scale-95"
+                className="w-full mb-4 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white py-3.5 rounded-2xl font-bold text-lg hover:from-cyan-600 hover:via-blue-700 hover:to-purple-700 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-2xl hover:shadow-3xl transform hover:scale-105 active:scale-95"
               >
                 {loading ? (
                   <>
@@ -231,7 +223,7 @@ export default function LoginForm({ onGotoSignup }) {
               </button>
 
               {/* Enhanced Divider */}
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>
                 </div>
@@ -244,7 +236,7 @@ export default function LoginForm({ onGotoSignup }) {
               <GoogleButton text="Sign in with Google" />
 
               {/* Enhanced Sign Up Link */}
-              <p className="mt-8 text-center text-gray-600">
+              <p className="mt-5 text-center text-gray-600">
                 Don't have an account?{' '}
                 <button
                   onClick={onGotoSignup}

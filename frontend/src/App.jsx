@@ -4,11 +4,16 @@ import Header from './Components/Header';
 import LoginForm from './Components/LoginForm';
 import SignupForm from './Components/SignUpForm';
 import Home from './Components/Home';
+import ProtectedRoute from './Components/ProtectedRoute';
+import ProfilePage from './pages/ProfilePage';
+import AdminDashboard from './pages/AdminDashboard';
 import CartPage from './Components/CartPage';
 import OAuthCallback from './Components/OAuthCallback';
 import { useAuth, AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { Toaster } from 'react-hot-toast';
 import api from './api/axiosConfig';
 
 function AppContent() {
@@ -69,34 +74,46 @@ function AppContent() {
       <Route
         path="/home"
         element={
-          user ? (
-            <>
-              <Header onLogout={handleLogout} />
-              <Home
-                searchQuery={searchQuery}
-                onSearch={handleSearch}
-                medicines={medicines}
-                isSearching={isSearching}
-                searchError={searchError}
-              />
-            </>
-          ) : (
-            <Navigate to="/login" replace />
-          )
+          <ProtectedRoute allowedRoles={['admin', 'doctor', 'pharmacist']}>
+            <Header onLogout={handleLogout} />
+            <Home
+              searchQuery={searchQuery}
+              onSearch={handleSearch}
+              medicines={medicines}
+              isSearching={isSearching}
+              searchError={searchError}
+            />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'doctor', 'pharmacist']}>
+            <Header onLogout={handleLogout} />
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <Header onLogout={handleLogout} />
+            <AdminDashboard />
+          </ProtectedRoute>
         }
       />
 
       <Route
         path="/cart"
         element={
-          user ? (
-            <>
-              <Header onLogout={handleLogout} />
-              <CartPage />
-            </>
-          ) : (
-            <Navigate to="/login" replace />
-          )
+          <ProtectedRoute allowedRoles={['admin', 'doctor', 'pharmacist']}>
+            <Header onLogout={handleLogout} />
+            <CartPage />
+          </ProtectedRoute>
         }
       />
     </Routes>
@@ -108,9 +125,12 @@ function App() {
     <ThemeProvider>
       <Router>
         <AuthProvider>
-          <CartProvider>
-            <AppContent />
-          </CartProvider>
+          <NotificationProvider>
+            <CartProvider>
+              <AppContent />
+              <Toaster position="top-right" />
+            </CartProvider>
+          </NotificationProvider>
         </AuthProvider>
       </Router>
     </ThemeProvider>

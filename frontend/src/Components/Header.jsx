@@ -1,9 +1,10 @@
 // src/Components/Header.jsx
 import React, { useState, useEffect } from 'react';
-import { Pill, LogOut, ShoppingCart, Menu, X, Home, User, Settings, Sparkles, Activity, Sun, Moon } from 'lucide-react';
+import { Pill, LogOut, ShoppingCart, Menu, X, Home, User, Settings, Sparkles, Activity, Sun, Moon, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
 
 export default function Header({ user, onLogout }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,9 +38,9 @@ export default function Header({ user, onLogout }) {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-500 ${isScrolled || isMobileMenuOpen
-          ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl shadow-lg shadow-gray-200/50 dark:shadow-black/50 border-b border-gray-200/50 dark:border-gray-800'
-          : 'bg-transparent border-b border-transparent py-2'
+      className={`sticky top-0 z-50 transition-all duration-500 backdrop-blur-xl ${isScrolled || isMobileMenuOpen
+        ? 'bg-white/90 dark:bg-[#0f172a]/95 shadow-lg shadow-gray-200/50 dark:shadow-cyan-900/10 border-b border-gray-200/50 dark:border-cyan-500/10'
+        : 'bg-white/60 dark:bg-[#0f172a]/80 border-b border-transparent dark:border-cyan-500/5 py-1'
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -50,11 +51,11 @@ export default function Header({ user, onLogout }) {
             className="cursor-pointer flex-shrink-0 group flex items-center gap-3 relative"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl blur opacity-50 group-hover:opacity-75 transition-all duration-500 scale-90 group-hover:scale-110"></div>
-              <div className="relative w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-cyan-500/30 transition-all duration-500 group-hover:rotate-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-xl blur opacity-40 group-hover:opacity-70 transition-all duration-700 scale-90 group-hover:scale-125"></div>
+              <div className="relative w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all duration-500 group-hover:rotate-6 group-hover:scale-110">
                 <Pill className="w-5 h-5 sm:w-6 sm:h-6 text-white transform group-hover:-rotate-12 transition-transform duration-500" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 opacity-0 group-hover:opacity-100 animate-pulse transition-opacity" />
+              <Sparkles className="absolute -top-1.5 -right-1.5 w-4 h-4 text-yellow-400 opacity-0 group-hover:opacity-100 animate-pulse transition-all duration-300" />
             </div>
 
             <div className="hidden sm:block">
@@ -67,12 +68,12 @@ export default function Header({ user, onLogout }) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-2 lg:gap-4">
-            <nav className="flex items-center gap-1 bg-gray-100/50 dark:bg-gray-800/50 p-1.5 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm">
+            <nav className="flex items-center gap-1 bg-gray-100/60 dark:bg-white/5 p-1.5 rounded-2xl border border-gray-200/50 dark:border-white/10 backdrop-blur-sm">
               <button
                 onClick={() => handleNavigation('/home')}
                 className={`relative px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${isActive('/home')
-                    ? 'bg-white dark:bg-gray-700 text-cyan-600 dark:text-cyan-400 shadow-md shadow-gray-200 dark:shadow-black/20 ring-1 ring-black/5 dark:ring-white/5'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
+                  ? 'bg-white dark:bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 shadow-md shadow-gray-200/50 dark:shadow-cyan-500/10 ring-1 ring-black/5 dark:ring-cyan-500/20'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-white/5'
                   }`}
               >
                 <Home className={`w-4 h-4 ${isActive('/home') ? 'animate-bounce-gentle' : ''}`} />
@@ -91,20 +92,20 @@ export default function Header({ user, onLogout }) {
               </button>
             </nav>
 
-            <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+            <div className="w-px h-8 bg-gray-200 dark:bg-white/10 mx-2"></div>
 
             <div className="flex items-center gap-3">
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-all duration-300"
+                className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-all duration-300 hover:rotate-12"
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
 
               <button
                 onClick={() => handleNavigation('/cart')}
-                className="relative group p-2.5 rounded-xl hover:bg-cyan-50 dark:hover:bg-cyan-900/30 transition-all duration-300"
+                className="relative group p-2.5 rounded-xl hover:bg-cyan-50 dark:hover:bg-cyan-500/10 transition-all duration-300"
               >
                 <div className={`transition-transform duration-300 ${cartCount > 0 ? 'group-hover:scale-110' : ''}`}>
                   <ShoppingCart className={`w-5 h-5 ${isActive('/cart') ? 'text-cyan-600 fill-cyan-100 dark:fill-cyan-900' : 'text-gray-500 dark:text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-400'
@@ -117,50 +118,74 @@ export default function Header({ user, onLogout }) {
                 )}
               </button>
 
-              <div className="relative group">
-                <button className="flex items-center gap-3 pl-1 pr-3 py-1 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300 shadow-sm hover:shadow-md">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 dark:from-cyan-900 dark:to-blue-900 flex items-center justify-center border-2 border-white dark:border-gray-700 shadow-sm overflow-hidden">
-                    <User className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                  </div>
-                  <div className="text-left hidden lg:block">
-                    <p className="text-xs font-bold text-gray-700 dark:text-gray-200 leading-none">{user?.name || 'User'}</p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium leading-none mt-1">Free Plan</p>
-                  </div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse ml-1"></div>
-                </button>
+              <div className="flex items-center gap-3">
+                <NotificationBell />
 
-                {/* Minimal Dropdown for Logout */}
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 z-50 overflow-hidden">
-                  <div className="p-2 space-y-1">
-                    <button className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors">
-                      <Settings className="w-4 h-4" />
-                      Settings
-                    </button>
-                    <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
-                    <button
-                      onClick={handleLogoutClick}
-                      className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </button>
+                <div className="relative group">
+                  <button className="flex items-center gap-3 pl-1 pr-3 py-1 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 rounded-full border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-cyan-500/20 transition-all duration-300 shadow-sm hover:shadow-md dark:hover:shadow-cyan-500/5">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 dark:from-cyan-900/50 dark:to-blue-900/50 flex items-center justify-center border-2 border-white dark:border-cyan-500/20 shadow-sm overflow-hidden">
+                      {user?.profilePicture ? (
+                        <img src={user.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                      )}
+                    </div>
+                    <div className="text-left hidden lg:block">
+                      <p className="text-xs font-bold text-gray-700 dark:text-gray-200 leading-none">{user?.name || 'User'}</p>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium leading-none mt-1 capitalize">{user?.role || 'Doctor'}</p>
+                    </div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse ml-1"></div>
+                  </button>
+
+                  {/* Minimal Dropdown for Logout */}
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-[#1e293b] rounded-2xl shadow-xl dark:shadow-2xl dark:shadow-black/40 border border-gray-100 dark:border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100 z-50 overflow-hidden">
+                    <div className="p-2 space-y-1">
+                      {user?.role === 'admin' && (
+                        <>
+                          <button
+                            onClick={() => handleNavigation('/admin')}
+                            className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/40 rounded-xl transition-colors"
+                          >
+                            <ShieldCheck className="w-4 h-4" />
+                            Admin Area
+                          </button>
+                          <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
+                        </>
+                      )}
+                      <button
+                        onClick={() => handleNavigation('/profile')}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                      >
+                        <Settings className="w-4 h-4" />
+                        Profile Settings
+                      </button>
+                      <div className="h-px bg-gray-100 dark:bg-gray-700 my-1"></div>
+                      <button
+                        onClick={handleLogoutClick}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Also add bell here */}
           <div className="md:hidden flex items-center gap-2">
+            <NotificationBell />
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+              className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10"
             >
-              {theme === 'dark' ? <Sun className="w-5 h-5 text-gray-400" /> : <Moon className="w-5 h-5 text-gray-600" />}
+              {theme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-600" />}
             </button>
             <button
               onClick={() => handleNavigation('/cart')}
-              className="relative p-2 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+              className="relative p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10"
             >
               <ShoppingCart className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               {cartCount > 0 && (
@@ -169,7 +194,7 @@ export default function Header({ user, onLogout }) {
             </button>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
@@ -193,8 +218,8 @@ export default function Header({ user, onLogout }) {
               <User className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
             </div>
             <div>
-              <p className="font-bold text-gray-900 dark:text-white text-lg">{user?.name || 'Hello, User'}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Welcome back!</p>
+              <p className="font-bold text-gray-900 dark:text-white text-lg line-clamp-1">{user?.name || 'Hello, User'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">{user?.role || 'Doctor'}</p>
             </div>
           </div>
 
@@ -202,8 +227,8 @@ export default function Header({ user, onLogout }) {
             <button
               onClick={() => handleNavigation('/home')}
               className={`flex items-center gap-4 w-full p-4 rounded-2xl font-bold transition-all ${isActive('/home')
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30'
-                  : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30'
+                : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
             >
               <Home className="w-5 h-5" />
@@ -211,10 +236,34 @@ export default function Header({ user, onLogout }) {
             </button>
 
             <button
+              onClick={() => handleNavigation('/profile')}
+              className={`flex items-center gap-4 w-full p-4 rounded-2xl font-bold transition-all ${isActive('/profile')
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30'
+                : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+            >
+              <User className="w-5 h-5" />
+              My Profile
+            </button>
+
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => handleNavigation('/admin')}
+                className={`flex items-center gap-4 w-full p-4 rounded-2xl font-bold transition-all ${isActive('/admin')
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30'
+                  : 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40'
+                  }`}
+              >
+                <ShieldCheck className="w-5 h-5" />
+                Admin Area
+              </button>
+            )}
+
+            <button
               onClick={() => handleNavigation('/cart')}
               className={`flex items-center gap-4 w-full p-4 rounded-2xl font-bold transition-all ${isActive('/cart')
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30'
-                  : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30'
+                : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
             >
               <div className="relative">

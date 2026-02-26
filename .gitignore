@@ -1,9 +1,11 @@
 # Dependencies
 node_modules/
 
-# Environment variables
+# Environment variables (SECRETS - never commit!)
 .env
 .env.local
+.env.production
+.env.*.local
 
 # Build outputs
 dist/
@@ -11,5 +13,18 @@ build/
 
 # System files
 .DS_Store
+Thumbs.db
 
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Data files
 backend/medicine_data.csv.zip
+
+# Coverage
+coverage/

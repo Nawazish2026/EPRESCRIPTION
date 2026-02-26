@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ========================================
    E-PRESCRIPTION - PREMIUM DESIGN SYSTEM
    ======================================== */
@@ -36,6 +39,23 @@
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+/* ========================================
+   BASE ELEMENT STYLES
+   ======================================== */
+
+html,
+body {
+  background-color: #f9fafb;
+  /* gray-50 */
+  transition: background-color 0.5s ease;
+}
+
+html.dark,
+html.dark body {
+  background-color: #111827;
+  /* gray-900 */
 }
 
 /* ========================================
@@ -511,6 +531,17 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
+.dark .glass-card {
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.dark .glass-card:hover {
+  background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
 /* ========================================
    GRADIENT & TEXT UTILITIES
    ======================================== */
@@ -614,6 +645,17 @@
   transform: translateY(-2px);
 }
 
+.dark .btn-glass {
+  color: #e2e8f0;
+  background: rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .btn-glass:hover {
+  background: rgba(51, 65, 85, 0.9);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
 /* ========================================
    CARD STYLES
    ======================================== */
@@ -633,6 +675,17 @@
   border-color: rgba(6, 182, 212, 0.3);
 }
 
+.dark .card-premium {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark .card-premium:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
 .medicine-card {
   background: white;
   border-radius: 1.5rem;
@@ -647,6 +700,17 @@
 .medicine-card:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.dark .medicine-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark .medicine-card:hover {
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
   border-color: rgba(6, 182, 212, 0.4);
 }
 
@@ -706,6 +770,26 @@
   color: #9ca3af;
 }
 
+.dark .input-premium {
+  color: #f1f5f9;
+  background: rgba(51, 65, 85, 0.8);
+  border-color: #475569;
+}
+
+.dark .input-premium:hover {
+  border-color: #64748b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .input-premium:focus {
+  border-color: #06b6d4;
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.15), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark .input-premium::placeholder {
+  color: #64748b;
+}
+
 /* ========================================
    TABLE STYLES
    ======================================== */
@@ -735,6 +819,20 @@
 
 .table-premium tbody tr:hover td {
   background: rgba(6, 182, 212, 0.05);
+}
+
+.dark .table-premium th {
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.8);
+  border-bottom-color: #334155;
+}
+
+.dark .table-premium td {
+  border-bottom-color: #1e293b;
+}
+
+.dark .table-premium tbody tr:hover td {
+  background: rgba(6, 182, 212, 0.08);
 }
 
 /* ========================================
@@ -827,6 +925,15 @@
   transform: scaleX(1);
 }
 
+.dark .feature-card {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .feature-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
 /* ========================================
    SCROLLBAR STYLES
    ======================================== */
@@ -857,6 +964,20 @@
 ::selection {
   background: rgba(6, 182, 212, 0.3);
   color: #1f2937;
+}
+
+.dark ::selection {
+  background: rgba(6, 182, 212, 0.4);
+  color: #f1f5f9;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
 }
 
 /* ========================================

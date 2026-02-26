@@ -1,6 +1,6 @@
 // src/components/SignupForm.jsx
 import React, { useState, useEffect } from 'react';
-import { Pill, User, Mail, Lock, Phone, ArrowRight, Eye, EyeOff, Loader, CheckCircle, Sparkles } from 'lucide-react';
+import { Pill, User, Mail, Lock, Phone, ArrowRight, Eye, EyeOff, Loader, CheckCircle, Sparkles, Building2 } from 'lucide-react';
 import GoogleButton from './GoogleButton';
 import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
@@ -8,28 +8,25 @@ import './forms.css';
 
 const InputField = ({ icon, type, value, onChange, placeholder, hasValidation, fieldKey }) => (
   <div className="relative group">
-    <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-      value 
-        ? 'text-purple-500 scale-110' 
-        : 'text-gray-400 scale-100'
-    } w-5 h-5 z-10`}>
+    <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${value
+      ? 'text-purple-500 scale-110'
+      : 'text-gray-400 scale-100'
+      } w-5 h-5 z-10`}>
       {icon}
     </div>
     <input
       type={type}
       value={value}
       onChange={onChange}
-      className={`w-full pl-12 pr-12 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
-        value 
-          ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white' 
-          : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-      }`}
+      className={`w-full pl-12 pr-12 py-3 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${value
+        ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white'
+        : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+        }`}
       placeholder={placeholder}
     />
     {/* Animated underline */}
-    <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${
-      value ? 'w-full' : 'w-0'
-    }`}></div>
+    <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${value ? 'w-full' : 'w-0'
+      }`}></div>
     {/* Validation indicator */}
     {hasValidation !== undefined && value && (
       <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -56,6 +53,7 @@ export default function SignupForm({ onGotoLogin }) {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [role, setRole] = useState('doctor');
   const [focusedField, setFocusedField] = useState('');
 
   useEffect(() => {
@@ -79,7 +77,7 @@ export default function SignupForm({ onGotoLogin }) {
 
     setLoading(true);
     try {
-      const response = await api.post('/auth/signup', { name, email, phone, password });
+      const response = await api.post('/auth/signup', { name, email, phone, password, role });
       login(response.data.token);
     } catch (err) {
       setError(err.response?.data?.message || 'Signup failed');
@@ -124,45 +122,45 @@ export default function SignupForm({ onGotoLogin }) {
 
       {/* Enhanced Floating Elements */}
       <div className="absolute top-20 right-20 w-40 h-40 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-20 blur-2xl animate-float"></div>
-      <div className="absolute bottom-32 left-16 w-64 h-64 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full opacity-15 blur-3xl animate-float" style={{animationDelay: '2s'}}></div>
-      <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-25 blur-xl animate-float" style={{animationDelay: '4s'}}></div>
-      
-      {/* Geometric Shapes */}
-      <div className="absolute top-40 left-40 w-24 h-24 border-2 border-purple-300 rounded-full opacity-30 animate-spin" style={{animationDuration: '20s'}}></div>
-      <div className="absolute bottom-40 right-40 w-16 h-16 border-2 border-pink-300 transform rotate-45 opacity-40 animate-pulse"></div>
-      <div className="absolute top-2/3 right-1/4 w-20 h-20 bg-gradient-to-br from-cyan-300 to-purple-300 rounded-lg opacity-20 blur-lg animate-bounce" style={{animationDelay: '3s'}}></div>
+      <div className="absolute bottom-32 left-16 w-64 h-64 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full opacity-15 blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-25 blur-xl animate-float" style={{ animationDelay: '4s' }}></div>
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+      {/* Geometric Shapes */}
+      <div className="absolute top-40 left-40 w-24 h-24 border-2 border-purple-300 rounded-full opacity-30 animate-spin" style={{ animationDuration: '20s' }}></div>
+      <div className="absolute bottom-40 right-40 w-16 h-16 border-2 border-pink-300 transform rotate-45 opacity-40 animate-pulse"></div>
+      <div className="absolute top-2/3 right-1/4 w-20 h-20 bg-gradient-to-br from-cyan-300 to-purple-300 rounded-lg opacity-20 blur-lg animate-bounce" style={{ animationDelay: '3s' }}></div>
+
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-3">
         <div className="w-full max-w-md">
           {/* Elegant Glass Card */}
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-600 rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-            <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-10 transform group-hover:scale-105 transition-all duration-500">
-              
+            <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 transform group-hover:scale-[1.02] transition-all duration-500">
+
               {/* Enhanced Logo */}
-              <div className="text-center mb-10">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 via-pink-600 to-indigo-600 rounded-2xl mb-6 shadow-2xl transform hover:rotate-12 hover:scale-110 transition-all duration-500 group">
+              <div className="text-center mb-5">
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-500 via-pink-600 to-indigo-600 rounded-2xl mb-3 shadow-2xl transform hover:rotate-12 hover:scale-110 transition-all duration-500 group">
                   <div className="relative">
-                    <Pill className="w-10 h-10 text-white" />
+                    <Pill className="w-7 h-7 text-white" />
                     <Sparkles className="w-4 h-4 text-yellow-300 absolute -top-1 -right-1 animate-pulse" />
                   </div>
                 </div>
-                <h1 className="text-4xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+                <h1 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent mb-1">
                   Create Account
                 </h1>
-                <p className="text-gray-600 text-lg font-medium">Join our healthcare community</p>
+                <p className="text-gray-600 text-sm font-medium">Join our healthcare community</p>
               </div>
 
               {/* Error Message */}
               {error && (
-                <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-r-xl text-red-700 text-sm font-medium flex items-center gap-3 shadow-lg">
+                <div className="mb-4 p-3 bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 rounded-r-xl text-red-700 text-sm font-medium flex items-center gap-3 shadow-lg">
                   <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                   {error}
                 </div>
               )}
 
               {/* Enhanced Form Fields */}
-              <div className="space-y-6 mb-8">
+              <div className="space-y-3 mb-4">
 
                 <InputField
                   icon={<User />}
@@ -194,24 +192,37 @@ export default function SignupForm({ onGotoLogin }) {
                   fieldKey="phone"
                 />
 
+                <div className="relative group">
+                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 text-purple-500 scale-110 w-5 h-5 z-10`}>
+                    <Building2 />
+                  </div>
+                  <select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="w-full pl-12 pr-12 py-3 border-2 border-purple-400 shadow-lg shadow-purple-100 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white appearance-none cursor-pointer"
+                  >
+                    <option value="doctor">Doctor</option>
+                    <option value="pharmacist">Pharmacist</option>
+                  </select>
+                  <div className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 w-full"></div>
+                </div>
+
 
                 <div className="relative group">
-                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-                    password 
-                      ? 'text-purple-500 scale-110' 
-                      : 'text-gray-400 scale-100'
-                  } w-5 h-5 z-10`}>
+                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${password
+                    ? 'text-purple-500 scale-110'
+                    : 'text-gray-400 scale-100'
+                    } w-5 h-5 z-10`}>
                     <Lock />
                   </div>
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`w-full pl-12 pr-16 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
-                      password 
-                        ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white' 
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                    }`}
+                    className={`w-full pl-12 pr-16 py-3 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${password
+                      ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white'
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                      }`}
                     placeholder="Enter your password"
                   />
                   <button
@@ -225,28 +236,25 @@ export default function SignupForm({ onGotoLogin }) {
                       <CheckCircle className="w-5 h-5 text-green-500 animate-bounce" />
                     </div>
                   )}
-                  <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${
-                    password ? 'w-full' : 'w-0'
-                  }`}></div>
+                  <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${password ? 'w-full' : 'w-0'
+                    }`}></div>
                 </div>
 
                 <div className="relative group">
-                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-                    confirmPassword 
-                      ? 'text-purple-500 scale-110' 
-                      : 'text-gray-400 scale-100'
-                  } w-5 h-5 z-10`}>
+                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${confirmPassword
+                    ? 'text-purple-500 scale-110'
+                    : 'text-gray-400 scale-100'
+                    } w-5 h-5 z-10`}>
                     <Lock />
                   </div>
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className={`w-full pl-12 pr-16 py-5 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${
-                      confirmPassword 
-                        ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white' 
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                    }`}
+                    className={`w-full pl-12 pr-16 py-3 border-2 rounded-2xl outline-none transition-all duration-500 text-gray-800 bg-white/90 backdrop-blur-sm placeholder-gray-500 ${confirmPassword
+                      ? 'border-purple-400 shadow-lg shadow-purple-100 bg-white'
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                      }`}
                     placeholder="Confirm your password"
                   />
                   <button
@@ -264,18 +272,17 @@ export default function SignupForm({ onGotoLogin }) {
                       )}
                     </div>
                   )}
-                  <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${
-                    confirmPassword ? 'w-full' : 'w-0'
-                  }`}></div>
+                  <div className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-500 ${confirmPassword ? 'w-full' : 'w-0'
+                    }`}></div>
                 </div>
 
                 {/* Enhanced Terms Agreement */}
-                <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200 shadow-lg">
-                  <input 
-                    type="checkbox" 
+                <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border-2 border-purple-200 shadow-lg">
+                  <input
+                    type="checkbox"
                     checked={agreedToTerms}
                     onChange={(e) => setAgreedToTerms(e.target.checked)}
-                    className="w-5 h-5 text-purple-600 border-2 border-purple-300 rounded focus:ring-purple-500 focus:ring-offset-0 mt-1 transform hover:scale-110 transition-transform" 
+                    className="w-5 h-5 text-purple-600 border-2 border-purple-300 rounded focus:ring-purple-500 focus:ring-offset-0 mt-1 transform hover:scale-110 transition-transform"
                   />
                   <label className="text-sm text-gray-700 leading-relaxed">
                     I agree to the{' '}
@@ -294,7 +301,7 @@ export default function SignupForm({ onGotoLogin }) {
               <button
                 onClick={handleSubmit}
                 disabled={loading || !name || !email || !phone || !password || !agreedToTerms || password !== confirmPassword}
-                className="w-full mb-6 bg-gradient-to-r from-purple-500 via-pink-600 to-indigo-600 text-white py-5 rounded-2xl font-bold text-lg hover:from-purple-600 hover:via-pink-700 hover:to-indigo-700 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-2xl hover:shadow-3xl transform hover:scale-105 active:scale-95"
+                className="w-full mb-4 bg-gradient-to-r from-purple-500 via-pink-600 to-indigo-600 text-white py-3 rounded-2xl font-bold text-base hover:from-purple-600 hover:via-pink-700 hover:to-indigo-700 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-2xl hover:shadow-3xl transform hover:scale-105 active:scale-95"
               >
                 {loading ? (
                   <>
@@ -310,7 +317,7 @@ export default function SignupForm({ onGotoLogin }) {
               </button>
 
               {/* Enhanced Divider */}
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200"></div>
                 </div>
@@ -323,7 +330,7 @@ export default function SignupForm({ onGotoLogin }) {
               <GoogleButton text="Sign up with Google" />
 
               {/* Enhanced Sign In Link */}
-              <p className="mt-8 text-center text-gray-600">
+              <p className="mt-4 text-center text-gray-600">
                 Already have an account?{' '}
                 <button
                   onClick={() => onGotoLogin && onGotoLogin()}

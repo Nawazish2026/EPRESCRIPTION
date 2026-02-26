@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import SmartDashboard from './SmartDashboard';
+import PrescriptionHistory from './PrescriptionHistory';
 import Stats from './Stats';
 import Features from './Features';
 import MedicineCard from './MedicineCard';
@@ -48,7 +49,12 @@ export default function Home({ searchQuery, onSearch, medicines, isSearching, se
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
-      {user && <SmartDashboard />}
+      {user && (
+        <div className="max-w-7xl mx-auto px-4 mt-8">
+          <SmartDashboard />
+          <PrescriptionHistory />
+        </div>
+      )}
 
       <main>
         {/* Enhanced Hero Search Section */}
