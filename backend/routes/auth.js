@@ -49,16 +49,16 @@ router.get('/google', (req, res, next) => {
 
 router.get('/google/callback', (req, res, next) => {
   if (!isGoogleOAuthConfigured()) {
-    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
+    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
     return res.redirect(`${frontendURL}/login?error=oauth_not_configured`);
   }
   passport.authenticate('google', { failureRedirect: '/login', session: false }, (err, user) => {
     if (err || !user) {
-      const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
+      const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendURL}/login?error=oauth_failed`);
     }
     const token = generateToken(user);
-    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5174';
+    const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
     res.redirect(`${frontendURL}/auth/callback?token=${token}`);
   })(req, res, next);
 });
